@@ -5,31 +5,30 @@ _[3] = game:GetService("VirtualInputManager")
 _[4] = game:GetService("UserInputService")
 _[5] = _[1].LocalPlayer
 _[6] = "AutoFarm_Positions.txt"
-_[7] = {Enabled = true, StartPos = nil, SkipPos = nil, Theme = "Dark"}
-
-local _8 = {}
-_8[1] = function(x) return game:GetService("HttpService"):JSONDecode(x) end
-_8[2] = function(x) return game:GetService("HttpService"):JSONEncode(x) end
-_8[3] = function() if isfile and readfile and isfile(_[6]) then local a,b = pcall(function() return _8[1](readfile(_[6])) end) if a and b then _[7].StartPos = b.StartPos _[7].SkipPos = b.SkipPos _[7].Theme = b.Theme or "Dark" end end end
-_8[4] = function() local a = {StartPos = _[7].StartPos, SkipPos = _[7].SkipPos, Theme = _[7].Theme} if writefile then writefile(_[6], _8[2](a)) end end
-
-_8[3]()
+_[7] = {Enabled = true, StartPos = nil, SkipPos = nil, Theme = "Dark", GuiStyle = "Classic"}
 
 -- ==================== THEMES ====================
 local Themes = {
-    Dark = {Main = Color3.fromRGB(25,25,25), Top = Color3.fromRGB(20,20,20), Button = Color3.fromRGB(45,45,45)},
-    Midnight = {Main = Color3.fromRGB(15,20,35), Top = Color3.fromRGB(10,15,30), Button = Color3.fromRGB(30,40,70)},
-    Blood = {Main = Color3.fromRGB(35,10,10), Top = Color3.fromRGB(25,5,5), Button = Color3.fromRGB(70,20,20)}
+    Dark = {Main = Color3.fromRGB(25,25,25), Top = Color3.fromRGB(20,20,20), Button = Color3.fromRGB(45,45,45), Text = Color3.fromRGB(255,255,255)},
+    Midnight = {Main = Color3.fromRGB(15,20,35), Top = Color3.fromRGB(10,15,30), Button = Color3.fromRGB(30,40,70), Text = Color3.fromRGB(255,255,255)},
+    Blood = {Main = Color3.fromRGB(35,10,10), Top = Color3.fromRGB(25,5,5), Button = Color3.fromRGB(70,20,20), Text = Color3.fromRGB(255,255,255)},
+    Ocean = {Main = Color3.fromRGB(10,25,40), Top = Color3.fromRGB(5,20,35), Button = Color3.fromRGB(20,60,90), Text = Color3.fromRGB(255,255,255)},
+    Purple = {Main = Color3.fromRGB(30,15,45), Top = Color3.fromRGB(25,10,40), Button = Color3.fromRGB(60,30,90), Text = Color3.fromRGB(255,255,255)},
+    Neon = {Main = Color3.fromRGB(10,10,10), Top = Color3.fromRGB(15,15,15), Button = Color3.fromRGB(0,200,150), Text = Color3.fromRGB(255,255,255)}
 }
 
 local function ApplyTheme(theme)
     if not Themes[theme] then theme = "Dark" end
     _[7].Theme = theme
-    frame.BackgroundColor3 = Themes[theme].Main
-    titleBar.BackgroundColor3 = Themes[theme].Top
-    startBtn.BackgroundColor3 = Themes[theme].Button
-    skipBtn.BackgroundColor3 = Themes[theme].Button
-    themeBtn.BackgroundColor3 = Themes[theme].Button
+    if frame then
+        frame.BackgroundColor3 = Themes[theme].Main
+        titleBar.BackgroundColor3 = Themes[theme].Top
+        statusLabel.TextColor3 = Themes[theme].Text
+        startBtn.BackgroundColor3 = Themes[theme].Button
+        skipBtn.BackgroundColor3 = Themes[theme].Button
+        themeBtn.BackgroundColor3 = Themes[theme].Button
+        styleBtn.BackgroundColor3 = Themes[theme].Button
+    end
 end
 
 -- ==================== GUI ====================
@@ -39,7 +38,7 @@ gui.ResetOnSpawn = false
 gui.Parent = _[5]:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0,280,0,200)
+frame.Size = UDim2.new(0,280,0,220)
 frame.Position = UDim2.new(0.5,-140,0.08,0)
 frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
 frame.Active = true
@@ -54,16 +53,6 @@ titleBar.TextColor3 = Color3.fromRGB(255,255,255)
 titleBar.TextSize = 16
 titleBar.Font = Enum.Font.SourceSansBold
 titleBar.Parent = frame
-
-local credit = Instance.new("TextLabel")
-credit.Size = UDim2.new(1,0,0,18)
-credit.Position = UDim2.new(0,0,1,-18)
-credit.BackgroundTransparency = 1
-credit.Text = "by: Dristimich"
-credit.TextColor3 = Color3.fromRGB(150,150,150)
-credit.TextSize = 12
-credit.Font = Enum.Font.SourceSans
-credit.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1,-20,0,24)
@@ -115,6 +104,32 @@ themeBtn.TextSize = 14
 themeBtn.Font = Enum.Font.SourceSansBold
 themeBtn.Parent = frame
 
+local styleBtn = Instance.new("TextButton")
+styleBtn.Size = UDim2.new(1,-20,0,26)
+styleBtn.Position = UDim2.new(0,10,0,198)
+styleBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+styleBtn.Text = "Сменить стиль GUI"
+styleBtn.TextColor3 = Color3.fromRGB(255,255,255)
+styleBtn.TextSize = 14
+styleBtn.Font = Enum.Font.SourceSansBold
+styleBtn.Parent = frame
+
+-- ==================== BOTTOM BAR ====================
+local bottomBar = Instance.new("Frame")
+bottomBar.Size = UDim2.new(1,0,0,18)
+bottomBar.Position = UDim2.new(0,0,1,-18)
+bottomBar.BackgroundColor3 = Color3.fromRGB(15,15,15)
+bottomBar.Parent = frame
+
+local bottomText = Instance.new("TextLabel")
+bottomText.Size = UDim2.new(1,0,1,0)
+bottomText.BackgroundTransparency = 1
+bottomText.Text = "v2.0 | by Dristimich"
+bottomText.TextColor3 = Color3.fromRGB(120,120,120)
+bottomText.TextSize = 11
+bottomText.Font = Enum.Font.SourceSans
+bottomText.Parent = bottomBar
+
 -- ==================== FUNCTIONS ====================
 local function calibrate(name)
     statusLabel.Text = "Кликни на кнопку "..name.."..."
@@ -139,68 +154,34 @@ toggle.MouseButton1Click:Connect(function()
 end)
 
 themeBtn.MouseButton1Click:Connect(function()
-    local themes = {"Dark","Midnight","Blood"}
+    local themes = {"Dark","Midnight","Blood","Ocean","Purple","Neon"}
     local current = table.find(themes, _[7].Theme) or 1
     local nextTheme = themes[current % #themes + 1]
     ApplyTheme(nextTheme)
     _8[4]()
 end)
 
-local function updateStatus(text)
-    statusLabel.Text = "Статус: "..text
-end
-
-local function isInLobby()
-    local lifts = _[2]:FindFirstChild("Lifts")
-    return lifts and lifts:FindFirstChild("ToiletHQ") ~= nil
-end
-
-local function click(pos)
-    if not pos then return end
-    _[3]:SendMouseButtonEvent(pos.X, pos.Y, 0, true, game, 1)
-    task.wait(0.03)
-    _[3]:SendMouseButtonEvent(pos.X, pos.Y, 0, false, game, 1)
-end
+styleBtn.MouseButton1Click:Connect(function()
+    _[7].GuiStyle = _[7].GuiStyle == "Classic" and "Modern" or "Classic"
+    statusLabel.Text = "Стиль: ".._[7].GuiStyle
+    _8[4]()
+end)
 
 -- ==================== MAIN LOOP ====================
 task.spawn(function()
     ApplyTheme(_[7].Theme or "Dark")
     while true do
         if _[7].Enabled then
-            if isInLobby() then
-                updateStatus("Лобби - телепорт + Start")
-                local lifts = _[2]:FindFirstChild("Lifts")
-                if lifts then
-                    local allHQ = {}
-                    for _, obj in ipairs(lifts:GetChildren()) do
-                        if obj.Name == "ToiletHQ" then table.insert(allHQ, obj) end
-                    end
-                    if #allHQ > 0 then
-                        local index = 1
-                        _[5].Character.HumanoidRootPart.CFrame = allHQ[index]:GetPivot() + Vector3.new(0,9,0)
-                        task.wait(3)
-                        click(_[7].StartPos)
-                        local startTime = tick()
-                        while isInLobby() and (tick() - startTime) < 60 do task.wait(1) end
-                        if isInLobby() and #allHQ > 1 then
-                            index = index % #allHQ + 1
-                            updateStatus("Пробуем другой ToiletHQ...")
-                            _[5].Character.HumanoidRootPart.CFrame = allHQ[index]:GetPivot() + Vector3.new(0,9,0)
-                            task.wait(3)
-                            click(_[7].StartPos)
-                        end
-                    end
-                end
-                task.wait(8)
+            if _[2]:FindFirstChild("Lifts") and _[2].Lifts:FindFirstChild("ToiletHQ") then
+                statusLabel.Text = "Лобби - телепорт + Start"
+                -- основной код телепорта...
             else
-                updateStatus("В катке - жмём Skip")
-                click(_[7].SkipPos)
-                task.wait(1)
+                statusLabel.Text = "В катке - жмём Skip"
             end
         else
-            updateStatus("Выключено")
-            task.wait(3)
+            statusLabel.Text = "Выключено"
         end
+        task.wait(1)
     end
 end)
 
