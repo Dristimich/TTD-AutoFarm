@@ -205,7 +205,7 @@ end
 
 themeBtn.MouseButton1Click:Connect(OpenThemeMenu)
 
--- ==================== ORIGINAL CODE ====================
+-- ==================== ORIGINAL FUNCTIONS ====================
 local function calibrate(name)
     statusLabel.Text = "Кликни на кнопку " .. name .. "..."
     local connection
