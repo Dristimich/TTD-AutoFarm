@@ -1,1 +1,200 @@
-local a=game:GetService;local b=a("Players");local c=a("Workspace");local d=a("VirtualInputManager");local e=a("UserInputService");local f=b.LocalPlayer;local g="AutoFarm_Positions.txt";getgenv().AutoFarm=getgenv().AutoFarm or{};getgenv().AutoFarm.Enabled=true;getgenv().AutoFarm.StartPos=getgenv().AutoFarm.StartPos or nil;getgenv().AutoFarm.SkipPos=getgenv().AutoFarm.SkipPos or nil;local function h()if isfile and readfile and isfile(g)then local i,j=pcall(function()return game:GetService("HttpService"):JSONDecode(readfile(g))end)if i and j then getgenv().AutoFarm.StartPos=j.StartPos;getgenv().AutoFarm.SkipPos=j.SkipPos end end end;local function k()local l={StartPos=getgenv().AutoFarm.StartPos,SkipPos=getgenv().AutoFarm.SkipPos};if writefile then writefile(g,game:GetService("HttpService"):JSONEncode(l))end end;h();local m=Instance.new("ScreenGui");m.Name="AutoFarmGUI";m.ResetOnSpawn=false;m.Parent=f:WaitForChild("PlayerGui");local n=Instance.new("Frame");n.Size=UDim2.new(0,260,0,175);n.Position=UDim2.new(0.5,-130,0.08,0);n.BackgroundColor3=Color3.fromRGB(30,30,30);n.Active=true;n.Draggable=true;n.Parent=m;local o=Instance.new("TextLabel");o.Size=UDim2.new(1,0,0,28);o.BackgroundColor3=Color3.fromRGB(20,20,20);o.Text="AutoFarm | Nightmare";o.TextColor3=Color3.fromRGB(255,255,255);o.TextSize=15;o.Font=Enum.Font.SourceSansBold;o.Parent=n;local p=Instance.new("TextLabel");p.Size=UDim2.new(1,0,0,18);p.Position=UDim2.new(0,0,1,-18);p.BackgroundTransparency=1;p.Text="by: Dristimich";p.TextColor3=Color3.fromRGB(180,180,180);p.TextSize=12;p.Font=Enum.Font.SourceSans;p.Parent=n;local q=Instance.new("TextLabel");q.Size=UDim2.new(1,-20,0,22);q.Position=UDim2.new(0,10,0,35);q.BackgroundTransparency=1;q.Text="Статус: Ожидание...";q.TextColor3=Color3.fromRGB(200,200,200);q.TextSize=13;q.Font=Enum.Font.SourceSans;q.Parent=n;local r=Instance.new("TextButton");r.Size=UDim2.new(1,-20,0,24);r.Position=UDim2.new(0,10,0,60);r.BackgroundColor3=Color3.fromRGB(0,170,0);r.Text="ВКЛЮЧЕНО";r.TextColor3=Color3.fromRGB(255,255,255);r.TextSize=14;r.Font=Enum.Font.SourceSansBold;r.Parent=n;local s=Instance.new("TextButton");s.Size=UDim2.new(1,-20,0,24);s.Position=UDim2.new(0,10,0,88);s.BackgroundColor3=Color3.fromRGB(60,60,60);s.Text="Задать координаты Start";s.TextColor3=Color3.fromRGB(255,255,255);s.TextSize=13;s.Font=Enum.Font.SourceSansBold;s.Parent=n;local t=Instance.new("TextButton");t.Size=UDim2.new(1,-20,0,24);t.Position=UDim2.new(0,10,0,116);t.BackgroundColor3=Color3.fromRGB(60,60,60);t.Text="Задать координаты Skip";t.TextColor3=Color3.fromRGB(255,255,255);t.TextSize=13;t.Font=Enum.Font.SourceSansBold;t.Parent=n;local function u(v)q.Text="Кликни на кнопку "..v.."...";local w;w=e.InputBegan:Connect(function(x)if x.UserInputType==Enum.UserInputType.MouseButton1 or x.UserInputType==Enum.UserInputType.Touch then if v=="Start"then getgenv().AutoFarm.StartPos={X=x.Position.X,Y=x.Position.Y}else getgenv().AutoFarm.SkipPos={X=x.Position.X,Y=x.Position.Y}end;k();q.Text=v.." координаты сохранены!";w:Disconnect()end end)end;s.MouseButton1Click:Connect(function()u("Start")end);t.MouseButton1Click:Connect(function()u("Skip")end);r.MouseButton1Click:Connect(function()getgenv().AutoFarm.Enabled=not getgenv().AutoFarm.Enabled;r.Text=getgenv().AutoFarm.Enabled and"ВКЛЮЧЕНО"or"ВЫКЛЮЧЕНО";r.BackgroundColor3=getgenv().AutoFarm.Enabled and Color3.fromRGB(0,170,0)or Color3.fromRGB(170,0,0)end);local function y(z)q.Text="Статус: "..z end;local function A()local B=c:FindFirstChild("Lifts");return B and B:FindFirstChild("ToiletHQ")~=nil end;local function C(D)if D then d:SendMouseButtonEvent(D.X,D.Y,0,true,game,1);task.wait(0.03);d:SendMouseButtonEvent(D.X,D.Y,0,false,game,1)end end;task.spawn(function()while true do if getgenv().AutoFarm.Enabled then if A()then y("Лобби - телепорт + Start");local E=c:FindFirstChild("Lifts");if E then local F={};for _,G in ipairs(E:GetChildren())do if G.Name=="ToiletHQ"then table.insert(F,G)end end;if#F>0 then local H=1;f.Character.HumanoidRootPart.CFrame=F[H]:GetPivot()+Vector3.new(0,9,0);task.wait(3);C(getgenv().AutoFarm.StartPos);local I=tick();while A()and(tick()-I)<60 do task.wait(1)end;if A()and#F>1 then H=H%#F+1;y("Пробуем другой ToiletHQ...");f.Character.HumanoidRootPart.CFrame=F[H]:GetPivot()+Vector3.new(0,9,0);task.wait(3);C(getgenv().AutoFarm.StartPos)end end end;task.wait(8)else y("В катке - жмём Skip");C(getgenv().AutoFarm.SkipPos);task.wait(1)end else y("Выключено");task.wait(3)end end end);print("[AutoFarm] Скрипт запущен (by: Dristimich)")
+local a = game:GetService("Players")
+local b = game:GetService("Workspace")
+local c = game:GetService("VirtualInputManager")
+local d = game:GetService("UserInputService")
+local e = a.LocalPlayer
+local f = "AutoFarm_Positions.txt"
+
+getgenv().AutoFarm = getgenv().AutoFarm or {}
+getgenv().AutoFarm.Enabled = false
+getgenv().AutoFarm.StartPos = getgenv().AutoFarm.StartPos or nil
+getgenv().AutoFarm.SkipPos = getgenv().AutoFarm.SkipPos or nil
+
+local function g()
+    if isfile and readfile and isfile(f) then
+        local h, i = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(readfile(f))
+        end)
+        if h and i then
+            getgenv().AutoFarm.StartPos = i.StartPos
+            getgenv().AutoFarm.SkipPos = i.SkipPos
+        end
+    end
+end
+
+local function j()
+    local k = {
+        StartPos = getgenv().AutoFarm.StartPos,
+        SkipPos = getgenv().AutoFarm.SkipPos
+    }
+    if writefile then
+        writefile(f, game:GetService("HttpService"):JSONEncode(k))
+    end
+end
+
+g()
+
+local l = Instance.new("ScreenGui")
+l.Name = "AutoFarmGUI"
+l.ResetOnSpawn = false
+l.Parent = e:WaitForChild("PlayerGui")
+
+local m = Instance.new("Frame")
+m.Size = UDim2.new(0, 260, 0, 175)
+m.Position = UDim2.new(0.5, -130, 0.08, 0)
+m.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+m.Active = true
+m.Draggable = true
+m.Parent = l
+
+local n = Instance.new("TextLabel")
+n.Size = UDim2.new(1, 0, 0, 28)
+n.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+n.Text = "AutoFarm | Nightmare"
+n.TextColor3 = Color3.fromRGB(255, 255, 255)
+n.TextSize = 15
+n.Font = Enum.Font.SourceSansBold
+n.Parent = m
+
+local o = Instance.new("TextLabel")
+o.Size = UDim2.new(1, 0, 0, 18)
+o.Position = UDim2.new(0, 0, 1, -18)
+o.BackgroundTransparency = 1
+o.Text = "by: Dristimich"
+o.TextColor3 = Color3.fromRGB(180, 180, 180)
+o.TextSize = 12
+o.Font = Enum.Font.SourceSans
+o.Parent = m
+
+local p = Instance.new("TextLabel")
+p.Size = UDim2.new(1, -20, 0, 22)
+p.Position = UDim2.new(0, 10, 0, 35)
+p.BackgroundTransparency = 1
+p.Text = "Статус: Ожидание..."
+p.TextColor3 = Color3.fromRGB(200, 200, 200)
+p.TextSize = 13
+p.Font = Enum.Font.SourceSans
+p.Parent = m
+
+local q = Instance.new("TextButton")
+q.Size = UDim2.new(1, -20, 0, 24)
+q.Position = UDim2.new(0, 10, 0, 60)
+q.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+q.Text = "ВЫКЛЮЧЕНО"
+q.TextColor3 = Color3.fromRGB(255, 255, 255)
+q.TextSize = 14
+q.Font = Enum.Font.SourceSansBold
+q.Parent = m
+
+local r = Instance.new("TextButton")
+r.Size = UDim2.new(1, -20, 0, 24)
+r.Position = UDim2.new(0, 10, 0, 88)
+r.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+r.Text = "Задать координаты Start"
+r.TextColor3 = Color3.fromRGB(255, 255, 255)
+r.TextSize = 13
+r.Font = Enum.Font.SourceSansBold
+r.Parent = m
+
+local s = Instance.new("TextButton")
+s.Size = UDim2.new(1, -20, 0, 24)
+s.Position = UDim2.new(0, 10, 0, 116)
+s.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+s.Text = "Задать координаты Skip"
+s.TextColor3 = Color3.fromRGB(255, 255, 255)
+s.TextSize = 13
+s.Font = Enum.Font.SourceSansBold
+s.Parent = m
+
+local function t(u)
+    p.Text = "Кликни на кнопку " .. u .. "..."
+    local v
+    v = d.InputBegan:Connect(function(w)
+        if w.UserInputType == Enum.UserInputType.MouseButton1 or w.UserInputType == Enum.UserInputType.Touch then
+            if u == "Start" then
+                getgenv().AutoFarm.StartPos = {X = w.Position.X, Y = w.Position.Y}
+            else
+                getgenv().AutoFarm.SkipPos = {X = w.Position.X, Y = w.Position.Y}
+            end
+            j()
+            p.Text = u .. " координаты сохранены!"
+            v:Disconnect()
+        end
+    end)
+end
+
+r.MouseButton1Click:Connect(function() t("Start") end)
+s.MouseButton1Click:Connect(function() t("Skip") end)
+
+q.MouseButton1Click:Connect(function()
+    getgenv().AutoFarm.Enabled = not getgenv().AutoFarm.Enabled
+    if getgenv().AutoFarm.Enabled then
+        q.Text = "ВКЛЮЧЕНО"
+        q.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+    else
+        q.Text = "ВЫКЛЮЧЕНО"
+        q.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+    end
+end)
+
+local function x(y)
+    p.Text = "Статус: " .. y
+end
+
+local function z()
+    local A = b:FindFirstChild("Lifts")
+    return A and A:FindFirstChild("ToiletHQ") ~= nil
+end
+
+local function B(C)
+    if not C then return end
+    c:SendMouseButtonEvent(C.X, C.Y, 0, true, game, 1)
+    task.wait(0.03)
+    c:SendMouseButtonEvent(C.X, C.Y, 0, false, game, 1)
+end
+
+task.spawn(function()
+    while true do
+        if getgenv().AutoFarm.Enabled then
+            if z() then
+                x("Лобби - телепорт + Start")
+                local D = b:FindFirstChild("Lifts")
+                if D then
+                    local E = {}
+                    for _, F in ipairs(D:GetChildren()) do
+                        if F.Name == "ToiletHQ" then
+                            table.insert(E, F)
+                        end
+                    end
+                    if #E > 0 then
+                        local G = 1
+                        e.Character.HumanoidRootPart.CFrame = E[G]:GetPivot() + Vector3.new(0, 9, 0)
+                        task.wait(3)
+                        B(getgenv().AutoFarm.StartPos)
+                        local H = tick()
+                        while z() and (tick() - H) < 60 do
+                            task.wait(1)
+                        end
+                        if z() and #E > 1 then
+                            G = G % #E + 1
+                            x("Пробуем другой ToiletHQ...")
+                            e.Character.HumanoidRootPart.CFrame = E[G]:GetPivot() + Vector3.new(0, 9, 0)
+                            task.wait(3)
+                            B(getgenv().AutoFarm.StartPos)
+                        end
+                    end
+                end
+                task.wait(8)
+            else
+                x("В катке - жмём Skip")
+                B(getgenv().AutoFarm.SkipPos)
+                task.wait(1)
+            end
+        else
+            x("Выключено")
+            task.wait(3)
+        end
+    end
+end)
+
+print("[AutoFarm] Скрипт запущен (by: Dristimich)")
