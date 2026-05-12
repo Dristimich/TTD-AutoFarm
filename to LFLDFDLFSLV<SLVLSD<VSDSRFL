@@ -56,7 +56,7 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 260, 0, 195)  -- увеличил высоту, чтобы влез текст
+frame.Size = UDim2.new(0, 260, 0, 195)
 frame.Position = UDim2.new(0.5, -130, 0.08, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.Active = true
@@ -136,7 +136,7 @@ themeBtn.Parent = frame
 local function ApplyTheme(theme)
     if not Themes[theme] then theme = "Dark" end
     getgenv().AutoFarm.Theme = theme
-    
+
     frame.BackgroundColor3 = Themes[theme].Main
     titleBar.BackgroundColor3 = Themes[theme].Top
     startBtn.BackgroundColor3 = Themes[theme].Button
@@ -257,12 +257,12 @@ end
 -- ==================== MAIN LOOP ====================
 task.spawn(function()
     ApplyTheme(getgenv().AutoFarm.Theme)
-    
+
     while true do
         if getgenv().AutoFarm.Enabled then
             if isInLobby() then
                 updateStatus("Лобби - телепорт + Start")
-                
+
                 local lifts = Workspace:FindFirstChild("Lifts")
                 if lifts then
                     local allHQ = {}
@@ -275,19 +275,16 @@ task.spawn(function()
                     if #allHQ > 0 then
                         local index = 1
                         
-                        -- Телепорт в первый ToiletHQ
                         player.Character.HumanoidRootPart.CFrame = allHQ[index]:GetPivot() + Vector3.new(0, 9, 0)
                         task.wait(3)
                         click(getgenv().AutoFarm.StartPos)
                         
                         local startTime = tick()
                         
-                        -- Ждём 60 секунд
                         while isInLobby() and (tick() - startTime) < 60 do
                             task.wait(1)
                         end
                         
-                        -- Если за 60 секунд не ушли — переключаемся на следующий ToiletHQ
                         if isInLobby() and #allHQ > 1 then
                             index = index % #allHQ + 1
                             updateStatus("Пробуем другой ToiletHQ...")
