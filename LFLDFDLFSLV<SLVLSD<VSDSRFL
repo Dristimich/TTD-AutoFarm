@@ -8,6 +8,7 @@ local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local UserInputService = game:GetService("UserInputService")
+
 local player = Players.LocalPlayer
 local fileName = "AutoFarm_Positions.txt"
 
@@ -61,14 +62,14 @@ end
 
 loadPositions()
 
--- ==================== MAIN GUI ====================
+-- GUI
 local gui = Instance.new("ScreenGui")
 gui.Name = "AutoFarmGUI"
 gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 260, 0, 200)
+frame.Size = UDim2.new(0, 260, 0, 175)
 frame.Position = UDim2.new(0.5, -130, 0.08, 0)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.Active = true
@@ -83,6 +84,16 @@ titleBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleBar.TextSize = 15
 titleBar.Font = Enum.Font.SourceSansBold
 titleBar.Parent = frame
+
+local credit = Instance.new("TextLabel")
+credit.Size = UDim2.new(1, 0, 0, 18)
+credit.Position = UDim2.new(0, 0, 1, -18)
+credit.BackgroundTransparency = 1
+credit.Text = "by: Dristimich"
+credit.TextColor3 = Color3.fromRGB(180, 180, 180)
+credit.TextSize = 12
+credit.Font = Enum.Font.SourceSans
+credit.Parent = frame
 
 local statusLabel = Instance.new("TextLabel")
 statusLabel.Size = UDim2.new(1, -20, 0, 22)
@@ -137,20 +148,20 @@ themeBtn.Parent = frame
 -- ==================== THEME MENU ====================
 local function OpenThemeMenu()
     local themeGui = Instance.new("ScreenGui")
-    themeGui.Name = "ThemeSelector"
+    themeGui.Name = "ThemeMenu"
     themeGui.ResetOnSpawn = false
     themeGui.Parent = player:WaitForChild("PlayerGui")
 
     local themeFrame = Instance.new("Frame")
-    themeFrame.Size = UDim2.new(0, 300, 0, 380)
-    themeFrame.Position = UDim2.new(0.5, -150, 0.25, 0)
+    themeFrame.Size = UDim2.new(0, 280, 0, 340)
+    themeFrame.Position = UDim2.new(0.5, -140, 0.25, 0)
     themeFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     themeFrame.Active = true
     themeFrame.Draggable = true
     themeFrame.Parent = themeGui
 
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 32)
+    title.Size = UDim2.new(1, 0, 0, 30)
     title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     title.Text = "Выберите тему"
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -158,69 +169,68 @@ local function OpenThemeMenu()
     title.Font = Enum.Font.SourceSansBold
     title.Parent = themeFrame
 
-    local close = Instance.new("TextButton")
-    close.Size = UDim2.new(0, 32, 0, 32)
-    close.Position = UDim2.new(1, -32, 0, 0)
-    close.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-    close.Text = "X"
-    close.TextColor3 = Color3.fromRGB(255, 255, 255)
-    close.TextSize = 14
-    close.Font = Enum.Font.SourceSansBold
-    close.Parent = themeFrame
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 30, 0, 30)
+    closeBtn.Position = UDim2.new(1, -30, 0, 0)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeBtn.TextSize = 14
+    closeBtn.Font = Enum.Font.SourceSansBold
+    closeBtn.Parent = themeFrame
 
-    close.MouseButton1Click:Connect(function()
+    closeBtn.MouseButton1Click:Connect(function()
         themeGui:Destroy()
     end)
 
-    local y = 45
-    for name, colors in pairs(Themes) do
+    local yPos = 40
+    for themeName, colors in pairs(Themes) do
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(1, -20, 0, 36)
-        btn.Position = UDim2.new(0, 10, 0, y)
+        btn.Size = UDim2.new(1, -20, 0, 34)
+        btn.Position = UDim2.new(0, 10, 0, yPos)
         btn.BackgroundColor3 = colors.Button
-        btn.Text = name
+        btn.Text = themeName
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 15
         btn.Font = Enum.Font.SourceSansBold
         btn.Parent = themeFrame
 
         btn.MouseButton1Click:Connect(function()
-            ApplyTheme(name)
+            ApplyTheme(themeName)
             savePositions()
             themeGui:Destroy()
         end)
 
-        y = y + 42
+        yPos = yPos + 38
     end
 end
 
 themeBtn.MouseButton1Click:Connect(OpenThemeMenu)
 
--- ==================== BUTTON FUNCTIONS ====================
-startBtn.MouseButton1Click:Connect(function()
-    statusLabel.Text = "Кликни на кнопку Start..."
-    local conn
-    conn = UserInputService.InputBegan:Connect(function(input)
+-- ==================== ORIGINAL FUNCTIONS ====================
+local function calibrate(name)
+    statusLabel.Text = "Кликни на кнопку " .. name .. "..."
+    local connection
+    connection = UserInputService.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            getgenv().AutoFarm.StartPos = {X = input.Position.X, Y = input.Position.Y}
+            if name == "Start" then
+                getgenv().AutoFarm.StartPos = {X = input.Position.X, Y = input.Position.Y}
+            else
+                getgenv().AutoFarm.SkipPos = {X = input.Position.X, Y = input.Position.Y}
+            end
             savePositions()
-            statusLabel.Text = "Start координаты сохранены!"
-            conn:Disconnect()
+            statusLabel.Text = name .. " координаты сохранены!"
+            connection:Disconnect()
         end
     end)
+end
+
+startBtn.MouseButton1Click:Connect(function()
+    calibrate("Start")
 end)
 
 skipBtn.MouseButton1Click:Connect(function()
-    statusLabel.Text = "Кликни на кнопку Skip..."
-    local conn
-    conn = UserInputService.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            getgenv().AutoFarm.SkipPos = {X = input.Position.X, Y = input.Position.Y}
-            savePositions()
-            statusLabel.Text = "Skip координаты сохранены!"
-            conn:Disconnect()
-        end
-    end)
+    calibrate("Skip")
 end)
 
 toggle.MouseButton1Click:Connect(function()
@@ -229,21 +239,68 @@ toggle.MouseButton1Click:Connect(function()
     toggle.BackgroundColor3 = getgenv().AutoFarm.Enabled and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(170, 0, 0)
 end)
 
+local function updateStatus(text)
+    statusLabel.Text = "Статус: " .. text
+end
+
+local function isInLobby()
+    local lifts = Workspace:FindFirstChild("Lifts")
+    return lifts and lifts:FindFirstChild("ToiletHQ") ~= nil
+end
+
+local function click(pos)
+    if pos then
+        VirtualInputManager:SendMouseButtonEvent(pos.X, pos.Y, 0, true, game, 1)
+        task.wait(0.03)
+        VirtualInputManager:SendMouseButtonEvent(pos.X, pos.Y, 0, false, game, 1)
+    end
+end
+
 -- ==================== MAIN LOOP ====================
 task.spawn(function()
     ApplyTheme(getgenv().AutoFarm.Theme)
     
     while true do
         if getgenv().AutoFarm.Enabled then
-            if Workspace:FindFirstChild("Lifts") and Workspace.Lifts:FindFirstChild("ToiletHQ") then
-                statusLabel.Text = "Лобби - телепорт + Start"
+            if isInLobby() then
+                updateStatus("Лобби - телепорт + Start")
+                local lifts = Workspace:FindFirstChild("Lifts")
+                if lifts then
+                    local allHQ = {}
+                    for _, obj in ipairs(lifts:GetChildren()) do
+                        if obj.Name == "ToiletHQ" then
+                            table.insert(allHQ, obj)
+                        end
+                    end
+                    
+                    if #allHQ > 0 then
+                        local index = 1
+                        player.Character.HumanoidRootPart.CFrame = allHQ[index]:GetPivot() + Vector3.new(0, 9, 0)
+                        task.wait(3)
+                        click(getgenv().AutoFarm.StartPos)
+                        local startTime = tick()
+                        while isInLobby() and (tick() - startTime) < 60 do
+                            task.wait(1)
+                        end
+                        if isInLobby() and #allHQ > 1 then
+                            index = index % #allHQ + 1
+                            updateStatus("Пробуем другой ToiletHQ...")
+                            player.Character.HumanoidRootPart.CFrame = allHQ[index]:GetPivot() + Vector3.new(0, 9, 0)
+                            task.wait(3)
+                            click(getgenv().AutoFarm.StartPos)
+                        end
+                    end
+                end
+                task.wait(8)
             else
-                statusLabel.Text = "В катке - жмём Skip"
+                updateStatus("В катке - жмём Skip")
+                click(getgenv().AutoFarm.SkipPos)
+                task.wait(1)
             end
         else
-            statusLabel.Text = "Выключено"
+            updateStatus("Выключено")
+            task.wait(3)
         end
-        task.wait(1)
     end
 end)
 
