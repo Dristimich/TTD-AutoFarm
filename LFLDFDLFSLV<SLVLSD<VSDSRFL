@@ -22,16 +22,17 @@ local Themes = {
     Neon = {Main = Color3.fromRGB(10,10,10), Top = Color3.fromRGB(15,15,15), Button = Color3.fromRGB(0,200,150)}
 }
 
-local function ApplyTheme(theme)
-    if not Themes[theme] then theme = "Dark" end
-    getgenv().AutoFarm.Theme = theme
-    
-    if frame then
-        frame.BackgroundColor3 = Themes[theme].Main
-        titleBar.BackgroundColor3 = Themes[theme].Top
-        startBtn.BackgroundColor3 = Themes[theme].Button
-        skipBtn.BackgroundColor3 = Themes[theme].Button
-        themeBtn.BackgroundColor3 = Themes[theme].Button
+-- ==================== SAVE/LOAD ====================
+local function loadPositions()
+    if isfile and readfile and isfile(fileName) then
+        local success, data = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(readfile(fileName))
+        end)
+        if success and data then
+            getgenv().AutoFarm.StartPos = data.StartPos
+            getgenv().AutoFarm.SkipPos = data.SkipPos
+            getgenv().AutoFarm.Theme = data.Theme or "Dark"
+        end
     end
 end
 
@@ -43,19 +44,6 @@ local function savePositions()
     }
     if writefile then
         writefile(fileName, game:GetService("HttpService"):JSONEncode(data))
-    end
-end
-
-local function loadPositions()
-    if isfile and readfile and isfile(fileName) then
-        local success, data = pcall(function()
-            return game:GetService("HttpService"):JSONDecode(readfile(fileName))
-        end)
-        if success and data then
-            getgenv().AutoFarm.StartPos = data.StartPos
-            getgenv().AutoFarm.SkipPos = data.SkipPos
-            getgenv().AutoFarm.Theme = data.Theme or "Dark"
-        end
     end
 end
 
@@ -144,7 +132,18 @@ themeBtn.TextSize = 13
 themeBtn.Font = Enum.Font.SourceSansBold
 themeBtn.Parent = frame
 
--- ==================== THEME MENU ====================
+-- ==================== THEME SYSTEM ====================
+local function ApplyTheme(theme)
+    if not Themes[theme] then theme = "Dark" end
+    getgenv().AutoFarm.Theme = theme
+    
+    frame.BackgroundColor3 = Themes[theme].Main
+    titleBar.BackgroundColor3 = Themes[theme].Top
+    startBtn.BackgroundColor3 = Themes[theme].Button
+    skipBtn.BackgroundColor3 = Themes[theme].Button
+    themeBtn.BackgroundColor3 = Themes[theme].Button
+end
+
 local function OpenThemeMenu()
     local themeGui = Instance.new("ScreenGui")
     themeGui.Name = "ThemeMenu"
@@ -255,7 +254,7 @@ local function click(pos)
     end
 end
 
--- ==================== ГЛАВНЫЙ ЦИКЛ С АНТИ-ЗАВИСАНИЕМ ====================
+-- ==================== MAIN LOOP ====================
 task.spawn(function()
     ApplyTheme(getgenv().AutoFarm.Theme)
     
